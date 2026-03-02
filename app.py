@@ -19,8 +19,29 @@ def send_telegram(message):
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.json
-    raw = json.dumps(data, ensure_ascii=False, indent=2)
-    send_telegram(f"📥 <b>Raw Data:</b>\n<pre>{raw[:3000]}</pre>")
+
+    event = data.get('eventType', 'unknown')
+    parcel = data.get('data', {})
+    tracking = parcel.get('trackingNumber', 'N/A')
+    state = parcel.get('state', {})
+    status = state.get('name', 'N/A')
+    customer = parcel.get('customer', {})
+    client = customer.get('name', 'N/A')
+    phone = customer.get('phone', {}).get('number1', 'N/A')
+    amount = parcel.get('amount', 'N/A')
+
+    message = f"""
+📦 <b>تحديث طرد جديد</b>
+━━━━━━━━━━━━━━
+🔔 الحدث: <b>{event}</b>
+📬 رقم التتبع: <code>{tracking}</code>
+📊 الحالة: <b>{status}</b>
+👤 العميل: {client}
+📞 الهاتف: {phone}
+💰 المبلغ: {amount} دج
+    """
+
+    send_telegram(message)
     return {"status": "ok"}, 200
 
 @app.route('/', methods=['GET'])
