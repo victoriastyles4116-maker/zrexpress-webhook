@@ -8,6 +8,19 @@ app = Flask(__name__)
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 CHAT_ID = os.environ.get("CHAT_ID")
 
+# الحالات التي تريد إشعاراً عنها
+ALERT_STATES = [
+    "Ne répond pas 2",
+    "Ne répond pas 3",
+    "Commande annulée",
+    "Annulé par le client",
+    "Le prix est faux",
+    "Wilaya erronée",
+    "Injoignable / Éteint",
+    "Fausse commande",
+    "Appel sans réponse"
+]
+
 def send_telegram(message):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     requests.post(url, json={
@@ -31,19 +44,20 @@ def webhook():
     amount = parcel.get('Amount', 'N/A')
     city = parcel.get('DeliveryAddress', {}).get('City', 'N/A')
 
-    message = f"""
-📦 <b>تحديث طرد جديد</b>
+    # إرسال الإشعار فقط إذا كانت الحالة في القائمة
+    if status in ALERT_STATES:
+        message = f"""
+⚠️ <b>تنبيه طرد</b>
 ━━━━━━━━━━━━━━
-🔔 الحدث: <b>{event}</b>
 📬 رقم التتبع: <code>{tracking}</code>
 📊 الحالة: <b>{status}</b>
 👤 العميل: {client}
 📞 الهاتف: {phone}
 🏙️ المدينة: {city}
 💰 المبلغ: {amount} دج
-    """
+        """
+        send_telegram(message)
 
-    send_telegram(message)
     return {"status": "ok"}, 200
 
 @app.route('/', methods=['GET'])
