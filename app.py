@@ -9,15 +9,9 @@ TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 CHAT_ID = os.environ.get("CHAT_ID")
 
 ALERT_SLUGS = [
-    "ne_repond_pas_2",
-    "ne_repond_pas_3",
-    "commande_annulee",
-    "annule_par_le_client",
-    "le_prix_est_faux",
-    "wilaya_erronee",
-    "injoignable_eteint",
-    "fausse_commande",
-    "appel_sans_reponse"
+    "appel_telephonique",
+    "en_attente_du_client",
+    "reporter_a_une_date_ulterieure"
 ]
 
 def send_telegram(message):
