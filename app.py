@@ -1,7 +1,6 @@
 from flask import Flask, request
 import requests
 import os
-import json
 
 app = Flask(__name__)
 
@@ -11,7 +10,10 @@ CHAT_ID = os.environ.get("CHAT_ID")
 ALERT_SLUGS = [
     "appel_telephonique",
     "en_attente_du_client",
-    "reporter_a_une_date_ulterieure"
+    "reporter_a_une_date_ulterieure",
+    "ne_repond_pas_1",
+    "ne_repond_pas_2",
+    "ne_repond_pas_3"
 ]
 
 def send_telegram(message):
@@ -38,17 +40,14 @@ def webhook():
     if event_type == 'parcel.state.situation.created':
         situation = parcel.get('Situation', {})
         slug = situation.get('Slug', '')
-        description = situation.get('Description', 'N/A')
-
-        print(f"SLUG RECEIVED: '{slug}'")
-        print(f"SLUG IN LIST: {slug in ALERT_SLUGS}")
+        name = situation.get('Name', 'N/A')
 
         if slug in ALERT_SLUGS:
             message = f"""
 ⚠️ <b>تنبيه طرد</b>
 ━━━━━━━━━━━━━━
 📬 رقم التتبع: <code>{tracking}</code>
-📊 الحالة: <b>{description}</b>
+📊 الحالة: <b>{name}</b>
 👤 العميل: {client}
 📞 الهاتف: {phone}
 🏙️ المدينة: {city}
