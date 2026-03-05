@@ -40,6 +40,9 @@ def webhook():
         slug = situation.get('Slug', '')
         description = situation.get('Description', 'N/A')
 
+        print(f"SLUG RECEIVED: '{slug}'")
+        print(f"SLUG IN LIST: {slug in ALERT_SLUGS}")
+
         if slug in ALERT_SLUGS:
             message = f"""
 ⚠️ <b>تنبيه طرد</b>
