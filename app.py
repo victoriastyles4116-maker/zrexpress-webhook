@@ -13,8 +13,17 @@ ALERT_SLUGS = [
     "reporter_a_une_date_ulterieure",
     "ne_repond_pas_1",
     "ne_repond_pas_2",
-    "ne_repond_pas_3"
+    "ne_repond_pas_3",
+    "annule_par_le_client",
+    "le_prix_est_faux",
+    "wilaya_erronee",
+    "injoignable_eteint",
+    "fausse_commande",
+    "appel_sans_reponse",
+    "commande_annulee"
 ]
+
+UNKNOWN_NOTIFY = True  # إرسال إشعار لكل slug جديد غير معروف
 
 def send_telegram(message):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
@@ -54,6 +63,10 @@ def webhook():
 💰 المبلغ: {amount} دج
             """
             send_telegram(message)
+
+        elif UNKNOWN_NOTIFY:
+            # إرسال إشعار لكل slug جديد غير موجود في القائمة
+            send_telegram(f"🔍 <b>Slug جديد غير معروف:</b>\n<code>{slug}</code>\nالاسم: {name}\nالطرد: {tracking}")
 
     return {"status": "ok"}, 200
 
