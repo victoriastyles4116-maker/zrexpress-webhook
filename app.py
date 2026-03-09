@@ -8,21 +8,18 @@ TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 CHAT_ID = os.environ.get("CHAT_ID")
 
 ALERT_SLUGS = [
-    "en_attente_du_client",
-    "reporter_a_une_date_ulterieure",
+    "commande_anullee",
     "ne_repond_pas_1",
     "ne_repond_pas_2",
     "ne_repond_pas_3",
-    "annule_par_le_client",
-    "le_prix_est_faux",
-    "wilaya_erronee",
-    "injoignable_eteint",
-    "fausse_commande",
+    "en_attente_du_client",
+    "reporter_a_une_date_ulterieure",
+    "commune_erronee",
     "appel_sans_reponse",
-    "commande_annulee"
+    "injoignable_eteint"
 ]
 
-UNKNOWN_NOTIFY = True  # إرسال إشعار لكل slug جديد غير معروف
+UNKNOWN_NOTIFY = True
 
 def send_telegram(message):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
@@ -49,13 +46,16 @@ def webhook():
         situation = parcel.get('Situation', {})
         slug = situation.get('Slug', '')
         name = situation.get('Name', 'N/A')
+        metadata = situation.get('Metadata', {})
+        comment = metadata.get('comment', '')
 
         if slug in ALERT_SLUGS:
+            comment_line = f"\n📝 السبب: <i>{comment}</i>" if comment else ""
             message = f"""
 ⚠️ <b>تنبيه طرد</b>
 ━━━━━━━━━━━━━━
 📬 رقم التتبع: <code>{tracking}</code>
-📊 الحالة: <b>{name}</b>
+📊 الحالة: <b>{name}</b>{comment_line}
 👤 العميل: {client}
 📞 الهاتف: {phone}
 🏙️ المدينة: {city}
@@ -64,8 +64,7 @@ def webhook():
             send_telegram(message)
 
         elif UNKNOWN_NOTIFY:
-            # إرسال إشعار لكل slug جديد غير موجود في القائمة
-            send_telegram(f"🔍 <b>Slug جديد غير معروف:</b>\n<code>{slug}</code>\nالاسم: {name}\nالطرد: {tracking}")
+            send_telegram(f"🔍 <b>Slug جديد:</b>\n<code>{slug}</code>\nالاسم: {name}\nالطرد: {tracking}")
 
     return {"status": "ok"}, 200
 
