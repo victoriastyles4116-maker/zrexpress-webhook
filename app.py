@@ -19,7 +19,7 @@ ALERT_SLUGS = [
     "injoignable_eteint"
 ]
 
-UNKNOWN_NOTIFY = True
+UNKNOWN_NOTIFY = False
 
 def send_telegram(message):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
