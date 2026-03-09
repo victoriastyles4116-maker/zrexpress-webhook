@@ -8,7 +8,6 @@ TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 CHAT_ID = os.environ.get("CHAT_ID")
 
 ALERT_SLUGS = [
-    "appel_telephonique",
     "en_attente_du_client",
     "reporter_a_une_date_ulterieure",
     "ne_repond_pas_1",
